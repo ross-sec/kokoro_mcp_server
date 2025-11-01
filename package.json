@@ -1,0 +1,74 @@
+{
+  "name": "@ross_tchnologies/kokoro-tts-mcp-server",
+  "version": "1.0.0",
+  "description": "Model Context Protocol (MCP) server for Kokoro text-to-speech with female voice. 100% local, no Python required. Supports SSE and stdio transports.",
+  "main": "dist/index.js",
+  "bin": {
+    "kokoro-tts-mcp": "./bin/kokoro-tts-mcp.js"
+  },
+  "type": "module",
+  "files": [
+    "dist",
+    "bin",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "test": "node tests/test-tts.js",
+    "check-deps": "bash scripts/check-dependencies.sh",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "tts",
+    "text-to-speech",
+    "kokoro",
+    "speech-synthesis",
+    "voice-synthesis",
+    "ai-voice",
+    "ross-technologies"
+  ],
+  "author": {
+    "name": "Ross Technologies",
+    "email": "devops.ross@gmail.com"
+  },
+  "contributors": [
+    {
+      "name": "Andre Ross"
+    },
+    {
+      "name": "Eyal Atias"
+    },
+    {
+      "name": "Leorah Ross"
+    }
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ross-sec/kokoro_mcp_server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ross-sec/kokoro_mcp_server/issues"
+  },
+  "homepage": "https://github.com/ross-sec/kokoro_mcp_server#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "express": "^4.21.2",
+    "kokoro-js": "^1.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.25",
+    "@types/node": "^20.11.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}
