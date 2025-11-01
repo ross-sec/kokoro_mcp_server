@@ -11,8 +11,63 @@ on:
       - master
 
 jobs:
-  publish:
+  check-version:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    
+    outputs:
+      version-changed: ${{ steps.check.outputs.changed }}
+      version: ${{ steps.get-version.outputs.version }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      
+      - name: Get current version
+        id: get-version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      
+      - name: Check if version changed
+        id: check
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          
+          # For tags, version should match tag (e.g., v1.0.1)
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            TAG_VERSION="${GITHUB_REF#refs/tags/v}"
+            if [ "$CURRENT_VERSION" = "$TAG_VERSION" ]; then
+              echo "changed=true" >> $GITHUB_OUTPUT
+              echo "✅ Version $CURRENT_VERSION matches tag"
+            else
+              echo "changed=false" >> $GITHUB_OUTPUT
+              echo "⚠️ Version $CURRENT_VERSION doesn't match tag $TAG_VERSION"
+            fi
+          # For branches, check if package.json version changed
+          else
+            if git diff HEAD~1 HEAD --quiet package.json; then
+              echo "changed=false" >> $GITHUB_OUTPUT
+              echo "⚠️ package.json version unchanged"
+            else
+              OLD_VERSION=$(git show HEAD~1:package.json | node -p "JSON.parse(require('fs').readFileSync(0)).version" 2>/dev/null || echo "")
+              if [ "$CURRENT_VERSION" != "$OLD_VERSION" ] && [ -n "$OLD_VERSION" ]; then
+                echo "changed=true" >> $GITHUB_OUTPUT
+                echo "✅ Version changed from $OLD_VERSION to $CURRENT_VERSION"
+              else
+                echo "changed=false" >> $GITHUB_OUTPUT
+                echo "⚠️ No version change detected"
+              fi
+            fi
+          fi
+
+  publish:
+    needs: check-version
+    runs-on: ubuntu-latest
+    if: needs.check-version.outputs.version-changed == 'true'
     permissions:
       contents: read
     
@@ -36,4 +91,8 @@ jobs:
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      - name: Publish confirmation
+        run: |
+          echo "✅ Successfully published version ${{ needs.check-version.outputs.version }} to npm"
 

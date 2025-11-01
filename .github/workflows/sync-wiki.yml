@@ -1,0 +1,81 @@
+name: Sync Wiki Documentation
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'wiki/**'
+      - 'resources/images/**'
+
+jobs:
+  sync-wiki:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout main repository
+        uses: actions/checkout@v4
+      
+      - name: Setup GitHub CLI
+        run: |
+          gh auth login --with-token <<< "${{ github.token }}"
+      
+      - name: Enable Wiki
+        run: |
+          gh repo edit ${{ github.repository }} --enable-wiki || echo "Wiki may already be enabled"
+      
+      - name: Clone wiki repository
+        run: |
+          if git clone https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.wiki.git wiki-repo 2>&1; then
+            echo "✅ Wiki repository cloned successfully"
+          else
+            echo "⚠️ Wiki not yet initialized. Creating local repo structure..."
+            mkdir -p wiki-repo
+            cd wiki-repo
+            git init
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git branch -M main
+            echo "ℹ️ Please create at least one page manually via GitHub UI to initialize the wiki, then this workflow will sync automatically"
+          fi
+      
+      - name: Copy wiki files
+        run: |
+          if [ ! -d "wiki-repo/.git" ]; then
+            echo "⚠️ Wiki repository not initialized. Skipping sync."
+            echo "ℹ️ To enable automatic wiki sync:"
+            echo "   1. Go to repository Settings → Features"
+            echo "   2. Enable Wiki"
+            echo "   3. Create at least one page manually"
+            echo "   4. Push to main branch again - wiki will sync automatically"
+            exit 0
+          fi
+          
+          cd wiki-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Copy all wiki markdown files
+          cp ../wiki/*.md . 2>/dev/null || true
+          
+          # Create resources directory in wiki if it doesn't exist
+          mkdir -p resources/images
+          
+          # Copy images
+          cp -r ../resources/images/* resources/images/ 2>/dev/null || true
+          
+          # Check if there are changes
+          if [ -n "$(git status --porcelain)" ]; then
+            git add .
+            git commit -m "Auto-sync wiki documentation from main repository [skip ci]"
+            git push https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.wiki.git main || \
+            git push https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.wiki.git master || \
+            echo "⚠️ Push failed"
+            echo "✅ Wiki updated successfully"
+          else
+            echo "ℹ️ No changes to sync"
+          fi
+
