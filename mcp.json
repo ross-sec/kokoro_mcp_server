@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "kokoro-tts": {
+      "command": "npx",
+      "args": ["-y", "@ross_tchnologies/kokoro-tts-mcp-server"]
+    }
+  }
+}

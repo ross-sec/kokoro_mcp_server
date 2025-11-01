@@ -18,5 +18,4 @@ tests/
 test-output*.log
 tests/test-output-*.wav
 .cursor/
-mcp.json
 package-lock.json
