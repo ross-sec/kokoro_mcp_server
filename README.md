@@ -1,100 +1,30 @@
 # @ross_tchnologies/kokoro-tts-mcp-server
 
-A Model Context Protocol (MCP) server for text-to-speech using the Kokoro TTS model with a default female voice. This server runs **100% locally** using the native JavaScript `kokoro-js` package, eliminating the need for Python dependencies.
+A Model Context Protocol (MCP) server for text-to-speech using the Kokoro TTS model with a default female voice. Runs **100% locally** with no Python dependencies.
 
-**Built by [Ross Technologies](https://github.com/ross-sec)**  
-**Location**: Beer Sheva, Israel  
-**Contact**: devops.ross@gmail.com
+**Built by [Ross Technologies](https://github.com/ross-sec)** | Beer Sheva, Israel | devops.ross@gmail.com
+
+[![npm version](https://img.shields.io/npm/v/@ross_tchnologies/kokoro-tts-mcp-server)](https://www.npmjs.com/package/@ross_tchnologies/kokoro-tts-mcp-server)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Features
 
-- ✅ **100% Local** - No Python dependencies required
-- ✅ **Native JavaScript** - Built with TypeScript and Node.js
-- ✅ **SSE Support** - Server-Sent Events for real-time communication
-- ✅ **Stdio Support** - Standard MCP transport mode
-- ✅ **NPX Ready** - Run directly with `npx` without installation
-- ✅ **Female Voice Default** - Uses `af_heart` voice out of the box
+✅ **100% Local** • ✅ **Native JavaScript/TypeScript** • ✅ **SSE & Stdio Support** • ✅ **NPX Ready** • ✅ **Female Voice Default** • ✅ **Auto Audio Playback**
 
-## Prerequisites
-
-- **Node.js** (v18 or higher)
-- No Python or other external dependencies required! 🎉
-
-## Installation
-
-### Quick Start with NPX (Recommended)
-
-Run directly without installation:
+## Quick Start
 
 ```bash
-    npx @ross_tchnologies/kokoro-tts-mcp-server
-```
+# Run with npx (no installation)
+npx @ross_tchnologies/kokoro-tts-mcp-server
 
-Or with SSE mode:
-
-```bash
-    npx @ross_tchnologies/kokoro-tts-mcp-server --sse --port=3000
-```
-
-### Install Globally
-
-```bash
-    npm install -g @ross_tchnologies/kokoro-tts-mcp-server
-```
-
-Then run:
-
-```bash
+# Or install globally
+npm install -g @ross_tchnologies/kokoro-tts-mcp-server
 kokoro-tts-mcp
 ```
 
-### Install Locally
+## MCP Client Configuration
 
-```bash
-    npm install @ross_tchnologies/kokoro-tts-mcp-server
-```
-
-## Usage
-
-### Running the Server
-
-#### Stdio Mode (Default - for MCP clients)
-
-```bash
-# Using NPX
-    npx @ross_tchnologies/kokoro-tts-mcp-server
-
-# Using global installation
-kokoro-tts-mcp
-
-# Using local installation
-    node node_modules/@ross_tchnologies/kokoro-tts-mcp-server/dist/index.js
-```
-
-#### SSE/HTTP Mode
-
-Run with Server-Sent Events support:
-
-```bash
-# Using NPX
-    npx @ross_tchnologies/kokoro-tts-mcp-server --sse --port=3000
-
-# Using global installation
-kokoro-tts-mcp --sse --port=3000
-
-# Custom port
-    npx @ross_tchnologies/kokoro-tts-mcp-server --sse --port=8080
-```
-
-SSE mode provides:
-- **SSE Endpoint**: `http://localhost:3000/sse` - Server-Sent Events stream
-- **MCP Endpoint**: `http://localhost:3000/mcp` - MCP JSON-RPC endpoint
-
-### MCP Client Configuration
-
-#### Using NPX (Recommended)
-
-Add this to your MCP configuration (e.g., Claude Desktop):
+Add to your MCP config (e.g., `~/.cursor/mcp.json`):
 
 ```json
 {
@@ -107,102 +37,105 @@ Add this to your MCP configuration (e.g., Claude Desktop):
 }
 ```
 
-#### Using Global Installation
+## Usage
+
+### Text to Speech Tool
 
 ```json
 {
-  "mcpServers": {
-    "kokoro-tts": {
-      "command": "kokoro-tts-mcp"
-    }
+  "name": "text_to_speech",
+  "arguments": {
+    "text": "Hello, world!",
+    "voice": "af_heart",  // optional, default
+    "speed": 1.0          // optional, default
   }
 }
 ```
 
-#### Using SSE Mode
+**Available Voices:** `af_heart` (default), `af_bella`, `af_sarah`, and more.
 
-```json
-{
-  "mcpServers": {
-    "kokoro-tts": {
-      "command": "npx",
-      "args": ["-y", "@ross_tchnologies/kokoro-tts-mcp-server", "--sse", "--port=3000"],
-      "env": {
-        "MCP_SERVER_URL": "http://localhost:3000/mcp"
-      }
-    }
-  }
-}
-```
+## Documentation
 
-### Available Tools
+📚 **[Full Documentation Wiki](https://github.com/ross-sec/kokoro_mcp_server/wiki)** - Complete guides, API reference, examples, and troubleshooting
 
-#### `text_to_speech`
+**Quick Links:**
+- [Installation Guide](https://github.com/ross-sec/kokoro_mcp_server/wiki/Installation)
+- [Getting Started](https://github.com/ross-sec/kokoro_mcp_server/wiki/Getting-Started)
+- [API Reference](https://github.com/ross-sec/kokoro_mcp_server/wiki/API-Reference)
+- [Examples](https://github.com/ross-sec/kokoro_mcp_server/wiki/Examples)
+- [Troubleshooting](https://github.com/ross-sec/kokoro_mcp_server/wiki/Troubleshooting)
+- [FAQ](https://github.com/ross-sec/kokoro_mcp_server/wiki/FAQ)
 
-Converts text to speech using Kokoro TTS with a female voice by default.
+## White Labeling
 
-**Parameters:**
-- `text` (required): The text to convert to speech
-- `voice` (optional): Voice ID to use (default: `af_heart`)
-  - Available female voices: `af_heart`, `af_bella`, `af_sarah`, etc.
-- `speed` (optional): Speech speed multiplier (default: `1.0`)
+This package is designed to be white-labeled for your organization or product. You can:
 
-**Response:**
-Returns base64-encoded WAV audio data in a data URI format within the text content. The audio can be extracted and played or saved to a file.
+### Rebranding Options
 
-**Example Response:**
-```json
-{
-  "content": [
-    {
-      "type": "text",
-      "text": "Successfully generated speech audio (123456 bytes). Audio data URI: data:audio/wav;base64,..."
-    }
-  ]
-}
-```
+1. **Package Name**: Fork and publish under your own npm organization
+2. **Branding**: Update logos, colors, and branding in the wiki and documentation
+3. **Customization**: Modify voice defaults, add custom voices, or extend functionality
+4. **Private Deployment**: Use internally without publishing to public npm
+
+### White Label Setup
+
+1. Fork this repository
+2. Update `package.json` with your organization details:
+   ```json
+   {
+     "name": "@your-org/kokoro-tts-mcp-server",
+     "author": "Your Company",
+     "repository": {
+       "url": "https://github.com/your-org/your-repo"
+     }
+   }
+   ```
+3. Replace branding assets in `resources/images/`
+4. Update wiki documentation with your branding
+5. Publish to your npm organization or use privately
+
+### License
+
+MIT License - See [LICENSE](LICENSE) for details. You're free to use, modify, and distribute this software, including commercial use.
+
+### Attribution
+
+While not required by the MIT License, attribution is appreciated. You may credit:
+- Original project: [Ross Technologies](https://github.com/ross-sec/kokoro_mcp_server)
+- Base TTS model: [Kokoro by hexgrad](https://github.com/hexgrad/kokoro)
+
+## Requirements
+
+- **Node.js** v18 or higher
+- No Python or other external dependencies required
 
 ## Troubleshooting
 
-### Model Download
-The first run will download the Kokoro model (~300MB). Ensure you have:
-- Stable internet connection
-- At least 500MB free disk space
-- Sufficient time for the download (may take a few minutes)
+- **First run**: Downloads ~300MB model (one-time, takes 2-5 minutes)
+- **Audio not playing**: File is saved - check response message for location
+- **WSL users**: Copy audio files to Windows Desktop for playback
 
-### Audio Generation Issues
-- **Voice not found**: Use valid voice IDs like `af_heart`, `af_bella`, `af_sarah`, etc. See the [Kokoro documentation](https://github.com/hexgrad/kokoro) for all available voices.
-- **Generation timeout**: First-time initialization can take 30-60 seconds. Be patient on the first run.
-- **Memory errors**: Ensure at least 4GB RAM available. The model runs on CPU by default.
-
-### WSL/Windows Users
-If you're using WSL and can't hear audio:
-1. The audio file is generated successfully - check the response for the base64 data URI
-2. Copy the generated audio to Windows and play it there
-3. Or install WSL Audio support from Microsoft Store
-
-## Authors
-
-- **Andre Ross**
-- **Eyal Atias**
-- **Leorah Ross**
-
-## Company
-
-**Ross Technologies**  
-Beer Sheva, Israel  
-Email: devops.ross@gmail.com
-
-## License
-
-MIT License - See [LICENSE](LICENSE) file for details.
+See [Troubleshooting Guide](https://github.com/ross-sec/kokoro_mcp_server/wiki/Troubleshooting) for detailed solutions.
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions welcome! See [Contributing Guide](https://github.com/ross-sec/kokoro_mcp_server/wiki/Contributing) and [Development Guide](https://github.com/ross-sec/kokoro_mcp_server/wiki/Development-Guide).
 
-## References
+## Authors
 
-- [Kokoro GitHub](https://github.com/hexgrad/kokoro)
-- [Model Context Protocol](https://modelcontextprotocol.io)
-- [npm Package](https://www.npmjs.com/package/@ross_tchnologies/kokoro-tts-mcp-server)
+**Ross Technologies**  
+Andre Ross • Eyal Atias • Leorah Ross
+
+## Links
+
+- 📦 [NPM Package](https://www.npmjs.com/package/@ross_tchnologies/kokoro-tts-mcp-server)
+- 🐙 [GitHub Repository](https://github.com/ross-sec/kokoro_mcp_server)
+- 📚 [Documentation Wiki](https://github.com/ross-sec/kokoro_mcp_server/wiki)
+- 🐛 [Report Issues](https://github.com/ross-sec/kokoro_mcp_server/issues)
+- 💬 [Discussions](https://github.com/ross-sec/kokoro_mcp_server/discussions)
+- 🔗 [Model Context Protocol](https://modelcontextprotocol.io)
+- 🔗 [Kokoro TTS Model](https://github.com/hexgrad/kokoro)
+
+## License
+
+MIT © 2025 Ross Technologies

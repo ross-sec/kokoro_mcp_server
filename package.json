@@ -1,6 +1,6 @@
 {
   "name": "@ross_tchnologies/kokoro-tts-mcp-server",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Model Context Protocol (MCP) server for Kokoro text-to-speech with female voice. 100% local, no Python required. Supports SSE and stdio transports.",
   "main": "dist/index.js",
   "bin": {
